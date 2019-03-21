@@ -1,0 +1,50 @@
+Vkplus1 = {}
+Q_Values_Dict = {}
+
+def one_step_of_VI(S, A, T, R, gamma, Vk):
+    global Q_Values_Dict
+    delta_max = -100000
+    for s in S:
+        max_value = 0
+        for a in A:
+            new_value = 0
+            for ss in S:
+                new_value += T(s, a, ss)*(R(s, a, ss)+gamma*Vk[ss])
+            Q_Values_Dict[(s, a)] = new_value
+            max_value = max(max_value, new_value)
+        Vkplus1[s] = max_value
+
+    for s in S:
+        delta_max = max(delta_max, abs(Vkplus1[s] - Vk[s]))
+            
+
+    return (Vkplus1, delta_max)
+    
+def return_Q_values(S,A):
+    if Q_Values_Dict == None:
+        Q_Values_Dict[(S,A)] = 0.0
+    return Q_Values_Dict
+Policy = {}
+def extract_policy(S,A):
+    global Policy, Q_Values_Dict
+    action = None
+    Policy = {}
+    for s in S:
+        new_value = 0
+        for a in A:
+            if Q_Values_Dict == None:
+                new_value = return_Q_values(s,a)
+            else:
+                Q_value = Q_Values_Dict[(s,a)]
+                if new_value < Q_value:
+                    new_value = Q_value
+                    action = a
+        Policy[s] = action
+    return Policy
+
+
+def apply_policy(s):
+    global Policy
+
+    return Policy[s]
+
