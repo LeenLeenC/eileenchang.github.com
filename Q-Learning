@@ -1,11 +1,3 @@
-'''yuc15_Q_Learn.py
-
-This is a file for implementing the Q Learning.
-
-'''
-
-def student_name():
-    return 'Chang, Eileen'
 
 STATES=None; ACTIONS=None; UQV_callback=None; Q_VALUES=None
 is_valid_goal_state=None; Terminal_state=None
@@ -32,10 +24,7 @@ def setup(states, actions, q_vals_dict, update_q_value_callback, \
 PREVIOUS_STATE=None
 LAST_ACTION=None
 def set_starting_state(s):
-    '''This is called by the GUI when a new episode starts.
-    Do not change this function.'''
     global INITIAL_STATE, PREVIOUS_STATE
-    print("In Q_Learn, setting the starting state to "+str(s))
     INITIAL_STATE = s
     PREVIOUS_STATE = s
 
@@ -45,7 +34,6 @@ EPSILON = 0.5
 CUSTOM_EPSILON = False
 GAMMA = 0.9
 def set_learning_parameters(alpha, epsilon, gamma):
-    ''' Called by the system. Do not change this function.'''
     global ALPHA, EPSILON, CUSTOM_ALPHA, CUSTOM_EPSILON, GAMMA
     ALPHA = alpha
     EPSILON = epsilon
@@ -56,16 +44,9 @@ def set_learning_parameters(alpha, epsilon, gamma):
     else: CUSTOM_EPSILON = False
 
 def update_Q_value(previous_state, previous_action, new_value):
-    '''Whenever your code changes a value in Q_VALUES, it should
-    also call this method, so the changes can be reflected in the
-    display.
-    Do not change this function.'''
     UQV_callback(previous_state, previous_action, new_value)
 
 def handle_transition(action, new_state, r):
-    '''When the user drives the agent, the system will call this function,
-    so that you can handle the learning that should take place on this
-    transition.'''
     global PREVIOUS_STATE, GAMMA, Q_VALUES
     max_value = -999999999
     for a in ACTIONS:
@@ -114,8 +95,8 @@ def choose_next_action(s, r, terminated):
                      value = Value
                      some_action = a
 
-     LAST_ACTION = some_action # remember this for next time
-     PREVIOUS_STATE = s        #    "       "    "   "    "
+     LAST_ACTION = some_action 
+     PREVIOUS_STATE = s       
      return some_action
 
 def exploration_fun(u, n):
@@ -124,15 +105,8 @@ def exploration_fun(u, n):
 
 Policy = {}
 def extract_policy(S, A):
-   '''Return a dictionary mapping states to actions. Obtain the policy
-   using the q-values most recently computed.
-   Ties between actions having the same (s, a) value can be broken arbitrarily.
-   Reminder: goal states should map to the Exit action, and no other states
-   should map to the Exit action.
-   '''
    global Policy, Q_VALUES, is_valid_goal_state
    Policy = {}
-#*** ADD OR CHANGE CODE HERE ***
    action = None
    for s in S:
        new_value = 0
