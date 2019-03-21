@@ -1,0 +1,154 @@
+'''yuc15_Q_Learn.py
+
+This is a file for implementing the Q Learning.
+
+'''
+
+def student_name():
+    return 'Chang, Eileen'
+
+STATES=None; ACTIONS=None; UQV_callback=None; Q_VALUES=None
+is_valid_goal_state=None; Terminal_state=None
+USE_EXPLORATION_FUNCTION=None
+INITIAL_STATE=None
+Visit_Times = {}
+
+def setup(states, actions, q_vals_dict, update_q_value_callback, \
+          goal_test, terminal, use_exp_fn=False):
+    global STATES, ACTIONS, UQV_callback, Q_VALUES, is_valid_goal_state
+    global USE_EXPLORATION_FUNCTION, Terminal_state, Visit_Times
+    STATES = states
+    ACTIONS = actions
+    Q_VALUES = q_vals_dict
+    UQV_callback = update_q_value_callback
+    is_valid_goal_state = goal_test
+    Terminal_state = terminal
+    USE_EXPLORATION_FUNCTION = use_exp_fn
+    if USE_EXPLORATION_FUNCTION:
+         exploration_fun(Q_VALUES[(PREVIOUS_STATE, LAST_ACTION)], Visit_Times[PRVIOUS_STATE])
+
+        
+
+PREVIOUS_STATE=None
+LAST_ACTION=None
+def set_starting_state(s):
+    '''This is called by the GUI when a new episode starts.
+    Do not change this function.'''
+    global INITIAL_STATE, PREVIOUS_STATE
+    print("In Q_Learn, setting the starting state to "+str(s))
+    INITIAL_STATE = s
+    PREVIOUS_STATE = s
+
+ALPHA = 0.5
+CUSTOM_ALPHA = False
+EPSILON = 0.5
+CUSTOM_EPSILON = False
+GAMMA = 0.9
+def set_learning_parameters(alpha, epsilon, gamma):
+    ''' Called by the system. Do not change this function.'''
+    global ALPHA, EPSILON, CUSTOM_ALPHA, CUSTOM_EPSILON, GAMMA
+    ALPHA = alpha
+    EPSILON = epsilon
+    GAMMA = gamma
+    if alpha < 0: CUSTOM_ALPHA = True
+    else: CUSTOM_ALPHA = False
+    if epsilon < 0: CUSTOM_EPSILON = True
+    else: CUSTOM_EPSILON = False
+
+def update_Q_value(previous_state, previous_action, new_value):
+    '''Whenever your code changes a value in Q_VALUES, it should
+    also call this method, so the changes can be reflected in the
+    display.
+    Do not change this function.'''
+    UQV_callback(previous_state, previous_action, new_value)
+
+def handle_transition(action, new_state, r):
+    '''When the user drives the agent, the system will call this function,
+    so that you can handle the learning that should take place on this
+    transition.'''
+    global PREVIOUS_STATE, GAMMA, Q_VALUES
+    max_value = -999999999
+    for a in ACTIONS:
+        max_value = max(max_value, Q_VALUES[(new_state, a)])
+    q_value = r+ GAMMA*max_value
+    Q_VALUES[(PREVIOUS_STATE, action)] = q_value
+    update_Q_value(PREVIOUS_STATE, action, q_value)
+    PREVIOUS_STATE = new_state
+    return 
+
+import random
+
+def choose_next_action(s, r, terminated):
+     global INITIAL_STATE, PREVIOUS_STATE, LAST_ACTION, Q_VALUES, ACTIONS, Visit_Times, STATES
+     new_qval = -9999999
+     if terminated == True:
+        handle_transition(LAST_ACTION, s, r)
+        return None
+     if not (s==INITIAL_STATE):
+         max_value = -999999999
+         for a in ACTIONS:
+             max_value = max(max_value, Q_VALUES[(s, a)])
+         value = r+ GAMMA*max_value
+         new_qval = (1-ALPHA)*Q_VALUES[(PREVIOUS_STATE, LAST_ACTION)] + ALPHA*value
+         Q_VALUES[(PREVIOUS_STATE, LAST_ACTION) ] = new_qval
+         update_Q_value(PREVIOUS_STATE, LAST_ACTION, new_qval)
+
+     if PREVIOUS_STATE in Visit_Times:
+         amount = Visit_Times[PREVIOUS_STATE]
+         amount += 1
+         Visit_Times[PREVIOUS_STATE] = amount
+     else:
+        Visit_Times[PREVIOUS_STATE] = 1
+
+     if USE_EXPLORATION_FUNCTION:
+         exploration_fun(Q_VALUES[(PREVIOUS_STATE, LAST_ACTION)], Visit_Times[PRVIOUS_STATE])
+
+     if EPSILON > 0 or CUSTOM_EPSILON == True:
+         if random.random() > EPSILON:
+             some_action = random.choice(ACTIONS)
+         else:
+             value = -99999
+             for a in ACTIONS:
+                 Value = Q_VALUES[(s, a)]
+                 if value < Value:
+                     value = Value
+                     some_action = a
+
+     LAST_ACTION = some_action # remember this for next time
+     PREVIOUS_STATE = s        #    "       "    "   "    "
+     return some_action
+
+def exploration_fun(u, n):
+    global ACTIONS
+    return u + len(ACTIONS)/n
+
+Policy = {}
+def extract_policy(S, A):
+   '''Return a dictionary mapping states to actions. Obtain the policy
+   using the q-values most recently computed.
+   Ties between actions having the same (s, a) value can be broken arbitrarily.
+   Reminder: goal states should map to the Exit action, and no other states
+   should map to the Exit action.
+   '''
+   global Policy, Q_VALUES, is_valid_goal_state
+   Policy = {}
+#*** ADD OR CHANGE CODE HERE ***
+   action = None
+   for s in S:
+       new_value = 0
+       for a in A:
+           if is_valid_goal_state(s) :
+               Policy[s] = 'Exit'
+               continue
+           elif a == 'peg1' or a == 'peg2' or a == 'peg3':
+               Q_value = Q_VALUES[(s, a)]
+               if new_value < Q_value:
+                   new_value = Q_value
+                   action = a
+       Policy[s] = action
+   return Policy
+
+
+    
+
+
