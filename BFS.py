@@ -1,14 +1,7 @@
-This file contains Iterative BFS Algorithm.'''
-
 import sys
 
-if sys.argv==[''] or len(sys.argv)<2:
-    import Farmer_Fox as Problem
-else:
-    import importlib
-    Problem = importlib.import_module(sys.argv[1])
+import Farmer_Fox as Problem
 
-print("\nWelcome to ItrBFS")
 COUNT = None
 BACKLINKS = {}
 
@@ -26,22 +19,14 @@ def runBFS():
 
 def IterativeBFS(initial_state):
     global COUNT, BACKLINKS, MAX_OPEN_LENGTH
-
-# STEP 1. Put the start state on a list OPEN
     OPEN = [initial_state]
     CLOSED = []
     BACKLINKS[initial_state] = None
 
-# STEP 2. If OPEN is empty, output "DONE' and stop.
     while OPEN != []:
       report(OPEN, CLOSED, COUNT)
       if len(OPEN)>MAX_OPEN_LENGTH: MAX_OPEN_LENGTH = len(OPEN)
 
-
-# STEP 3. Select the first state on OPEN and call it S.
-#         Delete S from OPEN.
-#         Put S on CLOSED.
-#         If S is a goal state, output its description
       S = OPEN.pop(0)
       CLOSED.append(S)
 
@@ -51,9 +36,6 @@ def IterativeBFS(initial_state):
         print('Length of solution path found: '+str(len(path)-1)+' edges')
         return
       COUNT += 1
-
-# STEP 4. Generate the list L of successors of S and delete 
-#         from L those states already appearing on CLOSED.
       L = []
       for op in Problem.OPERATORS:
         if op.precond(S):
@@ -61,19 +43,12 @@ def IterativeBFS(initial_state):
           if not (new_state in CLOSED):
             L.append(new_state)
             BACKLINKS[new_state] = S
-
-# STEP 5. Delete from L any numbers of OPEN that occur on L.
-#         Insert all numbers of L at the end of OPEN.
       for s2 in L:
           for i in range(len(OPEN)):
               if (s2 == OPEN[i]):
                   del L[i]; break
       OPEN = OPEN + L
       print_state_list("OPEN", OPEN)
-
-
-
-# STEP 6. Go to Step 2.
 
 def print_state_list(name, lst):
   print(name+" is now: ",end='')
