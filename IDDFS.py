@@ -1,30 +1,11 @@
-'''yuc15_IDDFS.py
-by Yu-Ling Chang
-
-Iterative Deepening Depth-First Search of a problem space.
-Version 0.4, January 23 2019.
-
-Assignment 2, in CSE 415, Winter 2019
-
-This file contains Iterative Deepening DFS.'''
-
 import sys
-
-if sys.argv==[''] or len(sys.argv)<2:
-#  import EightPuzzle as Problem
-  import yuc15_Farmer_Fox as Problem
-else:
-  import importlib
-  Problem = importlib.import_module(sys.argv[1])
-
-print("\nWelcome to IDDFS")
+import EightPuzzle as Problem
 COUNT = None
 OPEN = []
 BACKLINKS = {}
 
 
 def IDDFS():
-    '''Iteratively search greater depths of the search tree to find the goal state.'''
     print('Initial State:')
     initial_state = Problem.CREATE_INITIAL_STATE()
     print(initial_state)
