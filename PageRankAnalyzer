@@ -1,0 +1,86 @@
+package search.analyzers;
+
+import datastructures.concrete.ChainedHashSet;
+import datastructures.concrete.KVPair;
+import datastructures.concrete.dictionaries.ChainedHashDictionary;
+import datastructures.interfaces.IDictionary;
+import datastructures.interfaces.ISet;
+import search.models.Webpage;
+
+import java.net.URI;
+
+public class PageRankAnalyzer {
+    private IDictionary<URI, Double> pageRanks;
+    public PageRankAnalyzer(ISet<Webpage> webpages, double decay, double epsilon, int limit) {
+        IDictionary<URI, ISet<URI>> graph = this.makeGraph(webpages);
+        this.pageRanks = this.makePageRanks(graph, decay, limit, epsilon);
+    }
+
+    private IDictionary<URI, ISet<URI>> makeGraph(ISet<Webpage> webpages) {
+        IDictionary<URI, ISet<URI>> makeGraph = new ChainedHashDictionary<>();        
+        for (Webpage page : webpages) {
+            ISet<URI> uri = new ChainedHashSet<>();
+            for (URI uri2 : page.getLinks()) {
+                uri.add(uri2);
+            }
+            makeGraph.put(page.getUri(), uri);
+        }
+       return makeGraph;  
+    }
+
+    private IDictionary<URI, Double> makePageRanks(IDictionary<URI, ISet<URI>> graph, double decay, int limit,
+            double epsilon) {
+        IDictionary<URI, Double> result = new ChainedHashDictionary<>();
+        IDictionary<URI, Double> rank = new ChainedHashDictionary<>();
+        IDictionary<URI, Integer> numLink = new ChainedHashDictionary<>();
+        IDictionary<URI, Double> clone = new ChainedHashDictionary<>();
+        ISet<URI> convergeURI = new ChainedHashSet<>();
+        
+        URI uriwithNoLink = null;
+        int zeroOutLink = 0;
+        int totalSize = graph.size();
+
+        for (KVPair<URI, ISet<URI>> page : graph) {
+            URI pagelink = page.getKey();
+            int valueSize = page.getValue().size();
+            numLink.put(pagelink, valueSize);
+            if (valueSize == 0) {
+                zeroOutLink = 1;
+                uriwithNoLink = pagelink;
+            }
+            rank.put(pagelink, 1.0 / totalSize);
+            result.put(pagelink, 0.0);
+        } 
+        
+        for (int i = 0; i < limit; i++) {  
+            for (KVPair<URI, ISet<URI>> page : graph) {
+                URI uri = page.getKey();
+                for (URI uriLink: page.getValue()) {
+                    result.put(uriLink, result.get(uriLink) + (decay * rank.get(uri) / numLink.get(uri)));
+                }
+                if (zeroOutLink == 1) {
+                    result.put(uri, result.get(uri) + (decay * rank.get(uriwithNoLink) / totalSize));
+                }
+                result.put(uri, result.get(uri) + ((1.0 - decay) / totalSize));
+            }
+            for (KVPair<URI, ISet<URI>> page : graph) {
+                URI uri = page.getKey();
+                double value = result.get(uri);
+                clone.put(uri, value);
+                if (Math.abs(value - rank.get(uri)) <= epsilon) {
+                    convergeURI.add(uri);
+                } 
+                rank.put(uri, value);
+                result.put(uri, 0.0);
+            }
+            if (convergeURI.size() == totalSize) {
+                break;
+            }
+        }
+        return clone;
+    }
+
+    public double computePageRank(URI pageUri) {
+        return pageRanks.get(pageUri);
+    }
+}
