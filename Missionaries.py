@@ -1,33 +1,8 @@
 '''Missionaries.py
 ("Missionaries and Cannibals" problem)
 '''
-#<METADATA>
-SOLUZION_VERSION = "2.0"
 PROBLEM_NAME = "Missionaries and Cannibals"
-PROBLEM_VERSION = "2.0"
-PROBLEM_AUTHORS = ['S. Tanimoto']
-PROBLEM_CREATION_DATE = "07-JAN-2018"
 
-# The following field is mainly for the human solver, via either the Text_SOLUZION_Client.
-# or the SVG graphics client.
-PROBLEM_DESC=\
- '''The <b>"Missionaries and Cannibals"</b> problem is a traditional puzzle
-in which the player starts off with three missionaries and three cannibals
-on the left bank of a river.  The object is to execute a sequence of legal
-moves that transfers them all to the right bank of the river.  In this
-version, there is a boat that can carry at most three people, and one of
-them must be a missionary to steer the boat.  It is forbidden to ever
-have one or two missionaries outnumbered by cannibals, either on the
-left bank, right bank, or in the boat.  In the formulation presented
-here, the computer will not let you make a move to such a forbidden situation, and it
-will only show you moves that could be executed "safely."
-'''
-#</METADATA>
-
-#<COMMON_DATA>
-#</COMMON_DATA>
-
-#<COMMON_CODE>
 M=0  # array index to access missionary counts
 C=1  # same idea for cannibals
 LEFT=0 # same idea for left side of river
@@ -47,7 +22,6 @@ class State():
     return True
 
   def __str__(self):
-    # Produces a textual description of a state.
     p = self.d['people']
     txt = "\n M on left:"+str(p[M][LEFT])+"\n"
     txt += " C on left:"+str(p[C][LEFT])+"\n"
@@ -62,16 +36,12 @@ class State():
     return (self.__str__()).__hash__()
 
   def copy(self):
-    # Performs an appropriately deep copy of a state,
-    # for use by operators in creating new states.
     news = State({})
     news.d['people']=[self.d['people'][M_or_C][:] for M_or_C in [M, C]]
     news.d['boat'] = self.d['boat']
     return news 
 
   def can_move(self,m,c):
-    '''Tests whether it's legal to move the boat and take
-     m missionaries and c cannibals.'''
     side = self.d['boat'] # Where the boat is.
     p = self.d['people']
     if m<1: return False # Need an M to steer boat.
@@ -90,9 +60,6 @@ class State():
 
 
   def move(self,m,c):
-    '''Assuming it's legal to make the move, this computes
-     the new state resulting from moving the boat carrying
-     m missionaries and c cannibals.'''
     news = self.copy()      # start with a deep copy.
     side = self.d['boat']         # where is the boat?
     p = news.d['people']          # get the array of arrays of people.
@@ -104,7 +71,6 @@ class State():
     return news
 
 def goal_test(s):
-  '''If all Ms and Cs are on the right, then s is a goal state.'''
   p = s.d['people']
   return (p[M][RIGHT]==3 and p[C][RIGHT]==3)
 
