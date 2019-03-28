@@ -1,25 +1,8 @@
-'''yuc15_Farmer_Fox.py
-by Yu-Ling Chang
-
-Assignment 2, in CSE 415, Winter 2019
-
 This file contains my problem formulation for the problem
 of the Farmer, Fox, Chicken, and Grain.'''
 
-PROBLEM_DESC=\
- '''A farmer needs to take a fox, chicken and sack of grain across a river using a small
-boat. He can only take one of the three items in the boat with him at one time. The
-fox must never be left alone with the chicken, and the chicken must never be left alone
-with the grain. '''
-
-#<METADATA>
-SOLUZION_VERSION = "2.0"
 PROBLEM_NAME = "Farmer, Fox, Chicken, and Grain"
-PROBLEM_VERSION = "2.0"
-PROBLEM_AUTHORS = ['Yu-Ling Chang']
-PROBLEM_CREATION_DATE = "23-JAN-2018"
 
-#<COMMON_CODE>
 LEFT = 0
 RIGHT = 1
 F = 0
