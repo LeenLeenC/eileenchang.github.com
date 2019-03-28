@@ -1,17 +1,9 @@
-'''yuc15_BFS.py
-by Yu-Ling Chang
-
-Iterative Breadth-First Search of a problem space.
-Version 0.4, January 23, 2019.
-
-Assignment 2, in CSE 415, Winter 2019
-
 This file contains Iterative BFS Algorithm.'''
 
 import sys
 
 if sys.argv==[''] or len(sys.argv)<2:
-    import yuc15_Farmer_Fox as Problem
+    import Farmer_Fox as Problem
 else:
     import importlib
     Problem = importlib.import_module(sys.argv[1])
